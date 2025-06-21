@@ -14,7 +14,7 @@ import Error from "./components/Error";
 import Login from "./components/login/Login";
 import Signup from "./components/signup/Signup";
 import Update from "./components/update/Update";
-import Create from "./components/create/create";
+import Create from "./components/create/Create";
 
 
 function App() {
