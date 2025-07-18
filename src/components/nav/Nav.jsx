@@ -12,7 +12,12 @@ const Nav = () => {
     localStorage.removeItem("userAtom"); // Clear persistent storage
     setUser({ isLoggedIn: false, data: {} }); // Update Recoil state immediately
     navigate("/"); // Redirect right away
-    toast.success("Signed out successfully", { position: "top-center" }); // Toast still works
+    toast.success("Signed out successfully", {  
+      position: "top-center",
+      autoClose: 3000,
+      theme: "dark",
+      transition: Bounce,
+    }); // Toast still works
 };
 
  return (
