@@ -6,9 +6,9 @@ import { userAtom } from "../atoms/user";
 import html2canvas from "html2canvas";
 
 const Blog = () => {
-  let [blogs, setBlogs] = useState(null);
-  let redir = useNavigate();
-  let user = useRecoilValue(userAtom);
+  const [blogs, setBlogs] = useState(null);
+  const redir = useNavigate();
+  const user = useRecoilValue(userAtom);
   const blogRef = useRef();
 
   const takeScreenshot = () => {
@@ -37,54 +37,58 @@ const Blog = () => {
     recognition.onresult = (event) => {
       const transcript =
         event.results[event.results.length - 1][0].transcript.toLowerCase();
-      console.log("Voice heard:", transcript);
       if (transcript.includes("screenshot")) {
         takeScreenshot();
       }
     };
 
     recognition.start();
-    return () => recognition.stop(); // Cleanup on unmount
+    return () => recognition.stop();
   }, []);
 
-  // fetch blogs data from API
   useEffect(() => {
-    if(!user.isLoggedIn) {
-      redir('/login')
+    if (!user.isLoggedIn) {
+      redir("/login");
     }
     axios
       .get("http://localhost:8000/Blogs")
-      .then((resp) => {
-        //console.log(resp.data);
-        setBlogs(resp.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+      .then((resp) => setBlogs(resp.data))
+      .catch((err) => console.log(err));
   }, []);
 
-
   return (
-    
-      <div id="Blog" className="bg-white">
-        <h1 className="font-poppines font-bold text-3xl mb-5"> Latest Blog </h1>
-        <div
-          ref={blogRef}
-          className="w-[70%] mx-auto shadow flex flex-col items-center justify-center gap-4 py-3 px-4"
-        >
-          {blogs &&
-            blogs.map((blog) => (
-              <div
-                onClick={() => redir("/blog/" + blog.id)}
-                key={blog.id}
-                className="odd:bg-gray even:bg-transparent text-black hover:bg-purple-400 shadow-md py-4 px-3"
-              >
-                <h3 className="text-center">{blog.title} </h3>
-              </div>
-            ))}
-        </div>
+    <div id="Blog" className="bg-white min-h-screen py-10">
+      <h1 className="font-bold text-3xl text-center text-purple-700 mb-8">
+        Latest Blog
+      </h1>
+
+      <div
+        ref={blogRef}
+        className="w-[90%] md:w-[80%] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+      >
+        {blogs &&
+          blogs.map((blog) => (
+            <div
+              key={blog.id}
+              onClick={() => redir("/blog/" + blog.id)}
+              className="bg-white shadow-lg rounded-xl p-5 cursor-pointer hover:scale-105 transition-all duration-300 border border-purple-200"
+            >
+              <h2 className="text-xl font-semibold text-purple-800 mb-2">
+                {blog.title}
+              </h2>
+              <p className="text-gray-600 text-sm mb-4">
+                {blog.content?.slice(0, 100)}...
+              </p>
+              <p className="text-xs text-gray-400 italic">
+                {blog.author ? `By ${blog.author}` : "Unknown Author"} |{" "}
+                {blog.date
+                  ? new Date(blog.date).toLocaleDateString()
+                  : "No Date"}
+              </p>
+            </div>
+          ))}
       </div>
-    
+    </div>
   );
 };
 

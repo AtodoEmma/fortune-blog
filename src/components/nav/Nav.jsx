@@ -1,54 +1,63 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { Link, useNavigate } from "react-router-dom";
+import { useRecoilState } from "recoil";
 import { userAtom } from "../atoms/user";
-
+import { toast } from "react-toastify";
 
 const Nav = () => {
- let [user, setUser]=useRecoilState(userAtom)
-  
-  return (
-    <nav className="bg-gray-700 py-3 px-4">
-      <ol className="flex items-center justify-between">
-        <li>
-          <Link className="text-white" to="">Logo
-            
-          </Link>
-        </li>
-        <li className="flex items-center justify-between gap-4">
-          <Link className="text-white" to="/blogs">
+  const [user, setUser] = useRecoilState(userAtom);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("userAtom"); // Clear persistent storage
+    setUser({ isLoggedIn: false, data: {} }); // Update Recoil state immediately
+    navigate("/"); // Redirect right away
+    toast.success("Signed out successfully", { position: "top-center" }); // Toast still works
+};
+
+ return (
+    <nav className="bg-gray-800 px-6 py-4 shadow-md">
+      <div className="flex justify-between items-center">
+        <Link to="/" className="text-yellow-400 text-xl font-bold">
+          JustFOOD
+        </Link>
+
+        <div className="flex space-x-4 text-sm text-white font-medium">
+          <Link to="/blogs" className="hover:text-yellow-300">
             Blog
           </Link>
-          {user.data.role === "admin" && (
-            <Link className="text-white text-nowrap" to="/create">
+
+          {user?.data?.role === "admin" && (
+            <Link to="/create" className="hover:text-yellow-300">
               Create Blog
             </Link>
           )}
-          {!user.isLoggedIn && (
+
+          {!user?.isLoggedIn && (
             <>
-              <Link className="text-white" to="/login">
+              <Link to="/login" className="hover:text-yellow-300">
                 Login
               </Link>
-              <Link className="text-white" to="/signup">
+              <Link to="/signup" className="hover:text-yellow-300">
                 Signup
               </Link>
             </>
           )}
-          {user.isLoggedIn && (
-            <Link
-              onClick={() => setUser({ isLoggedIn: false, data: {} })}
-              className="text-white"
-              to="#"
+
+          {user?.isLoggedIn && (
+            <button
+              onClick={handleLogout}
+              className="hover:text-red-400 transition-colors duration-200"
             >
-              Signout{" "}
-            </Link>
+              Signout
+            </button>
           )}
 
-          <Link className="text-white" to="/about">
+          <Link to="/about" className="hover:text-yellow-300">
             About
           </Link>
-        </li>
-      </ol>
+        </div>
+      </div>
     </nav>
   );
 };

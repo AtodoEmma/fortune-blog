@@ -2,136 +2,126 @@ import React, { useEffect, useState } from "react";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
-//toast step 1
 import { Bounce, ToastContainer, toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router-dom";
+import "react-toastify/dist/ReactToastify.css";
 
-const SignupSchema = Yup.object().shape({
-  title: Yup.string()
-    .min(5, "Too Short!")
-    .max(50, "Too Long!"),
-  body: Yup.string(),
-  author: Yup.string()
+const UpdateSchema = Yup.object().shape({
+  title: Yup.string().min(5, "Too Short!").max(50, "Too Long!").required("Title is required"),
+  body: Yup.string().required("Body is required"),
+  author: Yup.string().required("Author is required"),
 });
 
 const Update = () => {
-  let [toggle, setToggle] = useState(false);
-  let [post, setPost] =useState(null)
-  let redir = useNavigate();
-  let {slug}= useParams()
-  // toast step 3
-  const notify = () =>
+  const [post, setPost] = useState(null);
+  const redir = useNavigate();
+  const { slug } = useParams();
+
+  useEffect(() => {
+    axios
+      .get(`http://localhost:8000/Blogs/${slug}`)
+      .then((res) => setPost(res.data))
+      .catch((err) => console.error("Error loading blog:", err));
+  }, [slug]);
+
+  const handleSuccess = () => {
     toast.success("Blog Updated Successfully!", {
       position: "top-center",
       autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
       theme: "dark",
       transition: Bounce,
     });
 
-    useEffect(()=> {
-      axios.get("http://localhost:8000/Blogs/" + slug)
-        .then((reps) => {
-          console.log(reps.data);
-          setPost(reps.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    },[])
+    // Redirect after 3 seconds (same as toast duration)
+    setTimeout(() => {
+      redir("/blogs");
+    }, 3000);
+  };
+
+  if (!post) return <div className="text-center mt-10">Loading...</div>;
 
   return (
-    <div className="items-center mx-auto rounded p-3 mt-4 mb-4 flex flex-col justify-center w-[50%] shadow-lg">
-      <h1 className="font-bold text-purple-700 text-3xl">Update</h1>
-      {post && (
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-10">
+      <div className="bg-white shadow-lg rounded-xl w-full max-w-2xl p-8">
+        <h1 className="text-3xl font-bold text-purple-700 text-center mb-6">Update Blog</h1>
+
         <Formik
           initialValues={{
-            title: post ? post.title : "",
-            body: post ? post.body : "",
-            author: post ? post.author : "",
+            title: post.title || "",
+            body: post.body || "",
+            author: post.author || "",
           }}
-          validationSchema={SignupSchema}
-          onSubmit={(values) => {
-            // same shape as initial values
-            //console.log(values);
-
+          validationSchema={UpdateSchema}
+          onSubmit={(values, { setSubmitting }) => {
             axios
-              .patch("http://localhost:8000/Blogs/"+ slug, values)
-              .then((reps) => {
-                redir("/blogs");
-
-                console.log(reps.data);
-
-                notify();
-                setTimeout(() => {
-                  redir("/blogs");
-                }, 3000);
+              .patch(`http://localhost:8000/Blogs/${slug}`, values)
+              .then(() => {
+                handleSuccess();
+                setSubmitting(false);
               })
               .catch((err) => {
-                console.log(err);
+                console.error("Update failed:", err);
+                setSubmitting(false);
               });
           }}
         >
-          {({ errors, touched, values }) => (
-            <Form className="flex items-center justify-center flex-col gap-2">
-              <fieldset className="flex flex-col items-start justify-start gap-2">
-                <label htmlFor="title">Title</label>
+          {({ errors, touched, isSubmitting }) => (
+            <Form className="space-y-5">
+              <div>
+                <label htmlFor="title" className="block text-gray-700 font-medium mb-1">Title</label>
                 <Field
-                  values={values.title}
-                  className="border-2 rounded py-2 px-4"
-                  id="title"
                   name="title"
+                  placeholder="Enter blog title"
+                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400"
                 />
-              </fieldset>
+                {errors.title && touched.title && (
+                  <div className="text-red-600 text-sm mt-1">{errors.title}</div>
+                )}
+              </div>
 
-              {errors.title && touched.title ? (
-                <div className="text-red-600 text-[12px]">{errors.title}</div>
-              ) : null}
-              <fieldset className="flex flex-col items-start justify-start gap-2">
-                <label htmlFor="author">Author</label>
+              <div>
+                <label htmlFor="author" className="block text-gray-700 font-medium mb-1">Author</label>
                 <Field
-                  values={values.author}
-                  className="border-2 rounded py-2 px-4"
-                  id="author"
-                  type="text"
                   name="author"
+                  placeholder="Author name"
+                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400"
                 />
-              </fieldset>
-              {errors.author && touched.author ? (
-                <div className="text-red-600 text-[12px]">{errors.author}</div>
-              ) : null}
-              <fieldset className="flex flex-col items-start justify-start gap-2">
-                <label htmlFor="body">Body</label>
-                <Field as="textarea"
-                  values={values.body}
-                  className="border-2 rounded py-2 px-4 min-h-[20vh] text-wrap"
-                  id="body"
+                {errors.author && touched.author && (
+                  <div className="text-red-600 text-sm mt-1">{errors.author}</div>
+                )}
+              </div>
+
+              <div>
+                <label htmlFor="body" className="block text-gray-700 font-medium mb-1">Body</label>
+                <Field
+                  as="textarea"
                   name="body"
-                  type="text"
+                  rows={6}
+                  placeholder="Write your blog content..."
+                  className="w-full px-4 py-2 border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-purple-400"
                 />
-              </fieldset>
-              {errors.body && touched.body ? (
-                <div className="text-red-600 text-[12px]">{errors.body}</div>
-              ) : null}
+                {errors.body && touched.body && (
+                  <div className="text-red-600 text-sm mt-1">{errors.body}</div>
+                )}
+              </div>
 
               <button
-                className="border-2 py-2 px-4 rounded hover:text-white hover:bg-green-600"
                 type="submit"
+                disabled={isSubmitting}
+                className={`w-full text-white font-semibold py-2 px-4 rounded-md transition-all ${
+                  isSubmitting ? "bg-green-300 cursor-not-allowed" : "bg-green-500 hover:bg-green-600"
+                }`}
               >
-                Submit
+                {isSubmitting ? "Updating..." : "Update"}
               </button>
             </Form>
           )}
         </Formik>
-      )}
 
-      {/* Toast step 2*/}
-      <ToastContainer />
+        <ToastContainer />
+      </div>
     </div>
   );
 };
+
 export default Update;

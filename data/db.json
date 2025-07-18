@@ -3,8 +3,8 @@
     {
       "id": "1",
       "title": "The Spice Trail: Exploring Nigerian Pepper Soup 2",
-      "body": "Nigerian pepper soup is more than just a spicy broth — it’s a national treasure that brings people together at celebrations, street joints, and family gatherings. Known for its bold, aromatic flavor, pepper soup is made with a unique mix of indigenous spices that warm the body and awaken the senses. From catfish versions served in the south to goat meat favorites in the east, every region in Nigeria has its take on this beloved dish.\n\nThe beauty of pepper soup lies in its simplicity and depth. At its heart is the famous pepper soup spice mix, a blend that often includes calabash nutmeg, uda (Negro pepper), and scent leaves. When combined with fresh chili and a well-seasoned protein like goat meat, the result is a hot, deeply flavorful soup that feels both healing and satisfying. It’s a favorite remedy during cold weather or after childbirth — a bowl of comfort with a cultural stamp.\n\nMaking pepper soup at home is easy with the right ingredients. A slow simmer lets the spices fully develop, infusing the broth with layers of flavor. It’s best served piping hot, sometimes with a side of white rice, yam, or eaten on its own. What makes it unforgettable isn’t just the taste, but the emotion it carries — a warm memory of home, healing, and heritage in every spoonful.\n\nIn a world of fast food and instant meals, pepper soup reminds us to slow down and savor tradition. It’s not just food — it’s a story, passed from generation to generation, one bowl at a time.",
-      "author": "Mr. Adams"
+      "body": "Nigerian pepper soup is more than just a spicy broth — it’s a national treasure that brings people together at celebrations, street joints, and family gatherings. Known for its bold, aromatic flavor, pepper soup is made with a unique mix of indigenous spices that warm the body and awaken the senses. From catfish versions served in the south to goat meat favorites in the east, every region in Nigeria has its take on this beloved dish.\n\nThe beauty of pepper soup lies in its simplicity and depth. At its heart is the famous pepper soup spice mix, a blend that often includes calabash nutmeg, uda (Negro pepper), and scent leaves. When combined with fresh chili and a well-seasoned protein like goat meat, the result is a hot, deeply flavorful soup that feels both healing and satisfying. It’s a favorite remedy during cold weather or after childbirth — a bowl of comfort with a cultural stamp.\n\nMaking pepper soup at home is easy with the right ingredients. A slow simmer lets the spices fully develop, infusing the broth with layers of flavor. It’s best served piping hot, sometimes with a side of white rice, yam, or eaten on its own. What makes it unforgettable isn’t just the taste, but the emotion it carries — a warm memory of home, healing, and heritage in every spoonful.\n\nIn a world of fast food and instant meals, pepper soup reminds us to slow down and savor tradition. It’s not just food — it’s a story, passed from generation to generation, one bowl at a time",
+      "author": "Mrs. Maya"
     },
     {
       "id": "2",
@@ -54,37 +54,32 @@
   ],
   "users": [
     {
-      "id": "c836"
-    },
-    {
-      "id": "atodoemmanuel2029@gmail.com",
+      "id": "1",
       "fullname": "Emmanuel Ojochenemi Atodo",
+      "email": "atodoemmanuel2029@gmail.com",
       "password": "Aa@12345",
       "role": "admin"
     },
     {
-      "id": "atodoemmanuel2029@gmail.com",
-      "fullname": "Emmanuel Ojochenemi Atodo",
-      "password": "Aa@12345",
-      "role": "normal"
-    },
-    {
-      "id": "atodofortune@gmail.com",
+      "id": "2",
       "fullname": "Atodo Fortune",
+      "email": "atodofortune@gmail.com",
       "password": "Aa@12345",
       "role": "normal"
     },
     {
-      "id": "atodoemmanuel2029@gmail.com",
+      "id": "3",
+      "fullname": "Emmanuel Ojochenemi",
+      "email": "emmanuel.ojo@example.com",
+      "password": "Aa@12345",
+      "role": "normal"
+    },
+    {
+      "id": "fa0a",
       "fullname": "Emmanuel Ojochenemi Atodo",
-      "password": "Aa@12345",
-      "role": "normal"
-    },
-    {
-      "id": "atodofortune@gmail.com",
-      "fullname": "Emmanuel Ojochenemi ",
-      "password": "Aa@12345",
-      "role": "normal"
+      "email": "solomonpius550@gmail.com",
+      "password": "Dd@12345",
+      "role": "user"
     }
   ]
 }

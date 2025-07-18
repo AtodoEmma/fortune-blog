@@ -3,149 +3,161 @@ import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { PiEyeLight, PiEyeSlashThin } from "react-icons/pi";
 import axios from "axios";
-//toast step 1
 import { Bounce, ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { userAtom } from "../atoms/user";
 import { useRecoilState } from "recoil";
+import { userAtom } from "../atoms/user";
 
-const SignupSchema = Yup.object().shape({
-  
-  password: Yup.string()
-    .min(8, "Must Contain 8 Characters")
-    .required()
-    .matches(/(?=.*[a-z])/, " Must Contain One Lowercase Character")
-    .matches(/(?=.*[A-Z])/, "  Must Contain One Uppercase Character")
-    .matches(/(?=.*[0-9])/, "  Must Contain One Number Character")
-    .matches(
-      /^(?=.*[!@#\$%\^&\*])/,
-      "  Must Contain  One Special Case Character"
-    ),
+const LoginSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Required"),
+  password: Yup.string()
+    .min(8, "Must be at least 8 characters")
+    .required("Required")
+    .matches(/(?=.*[a-z])/, "Must contain a lowercase letter")
+    .matches(/(?=.*[A-Z])/, "Must contain an uppercase letter")
+    .matches(/(?=.*[0-9])/, "Must contain a number")
+    .matches(/(?=.*[!@#$%^&*])/, "Must contain a special character"),
 });
 
 const Login = () => {
-  let[user,setUser]=useRecoilState(userAtom);
-  let [toggle, setToggle] = useState(false);
-  let redir = useNavigate();
-  // toast step 3
-  const notify = () =>
-    toast.success("Logged in Successfully!", {
-      // onClose: () => redir('/blogs'),
+  const [user, setUser] = useRecoilState(userAtom);
+  const [toggle, setToggle] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const notifySuccess = () =>
+    toast.success("Logged in successfully!", {
       position: "top-center",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
+      autoClose: 2000,
       theme: "dark",
       transition: Bounce,
     });
-  const notify2 = () =>
+
+  const notifyError = () =>
     toast.error("Wrong email or password!", {
-      // onClose: () => redir('/blogs'),
       position: "top-center",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
+      autoClose: 2000,
       theme: "dark",
       transition: Bounce,
     });
-    
 
   return (
-    <div className="items-center mx-auto rounded p-3 mt-4 mb-4 flex flex-col justify-center w-[50%] shadow-lg">
-      <h1 className="font-bold text-purple-700 text-3xl">Login</h1>
-      <Formik
-        initialValues={{
-          email: "",
-          password: "",
-        }}
-        validationSchema={SignupSchema}
-        onSubmit={(values) => {
-          // same shape as initial values
-          //console.log(values);
-          axios
-            .get("http://localhost:8000/users/" + values.email)
-            .then((reps) => {
-              redir("/blogs");
+    <div className="max-w-md mx-auto mt-10 p-6 shadow border rounded">
+      <main className="flex-grow flex items-center justify-center">
+        <div className="w-[90%] md:w-[50%] p-6 rounded shadow-lg bg-white flex flex-col items-center">
+          <h1 className="text-2xl font-bold text-purple-700 mb-4">Login</h1>
 
-              console.log(reps.data);
-              if(reps.data.password===values.password){
-                setUser({isLoggedIn:true,data:{email:values.email, fullname: values.fullname, role:reps.data.role}})
-                notify();
-                setTimeout(() => {
-                  redir("/blogs");
-                }, 3000);
-              }else{
-                notify2()
-              }
+          <Formik
+            initialValues={{ email: "", password: "" }}
+            validationSchema={LoginSchema}
+            onSubmit={(values) => {
+              setLoading(true);
+              axios
+                .get(
+                  `http://localhost:8000/users?email=${encodeURIComponent(
+                    values.email
+                  )}`
+                )
+                .then((res) => {
+                  const userFromDB = res.data[0];
+                  if (userFromDB && userFromDB.password === values.password) {
+                    const loggedInUser = {
+                      isLoggedIn: true,
+                      data: {
+                        email: userFromDB.email,
+                        fullname: userFromDB.fullname,
+                        role: userFromDB.role,
+                      },
+                    };
+                    setUser(loggedInUser);
+                    localStorage.setItem("user", JSON.stringify(loggedInUser));
+                    notifySuccess();
+                    setTimeout(() => navigate("/blogs"), 2000);
+                  } else {
+                    notifyError();
+                  }
+                })
+                .catch(() => {
+                  notifyError();
+                })
+                .finally(() => {
+                  setLoading(false);
+                });
+            }}
+          >
+            {({ errors, touched }) => (
+              <Form className="w-full flex flex-col gap-4">
+                <div className="flex flex-col">
+                  <label htmlFor="email">Email</label>
+                  <Field
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="e.g. user@example.com"
+                    className="border-1 rounded px-4 py-2"
+                  />
+                  {errors.email && touched.email && (
+                    <span className="text-red-600 text-sm">{errors.email}</span>
+                  )}
+                </div>
 
-              
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        }}
-      >
-        {({ errors, touched }) => (
-          <Form className="flex items-center justify-center flex-col gap-2">
-            <fieldset className="flex flex-col items-start justify-start gap-2">
-              <label htmlFor="password">Password</label>
-              <div className="flex items-start justify-start flex-row gap-2">
-                <Field
-                  className="border-2 rounded py-2 px-4"
-                  id="password"
-                  type={toggle ? "text" : `password`}
-                  name="password"
-                  placeholder="Strong Password"
-                />
+                <div className="flex flex-col">
+                  <label htmlFor="password">Password</label>
+                  <div className="relative">
+                    <Field
+                      id="password"
+                      name="password"
+                      type={toggle ? "text" : "password"}
+                      placeholder="Enter strong password"
+                      className="border-1 rounded px-4 py-2 w-full pr-10"
+                    />
+                    <span
+                      onClick={() => setToggle(!toggle)}
+                      className="absolute top-1/2 right-3 transform -translate-y-1/2 cursor-pointer text-gray-500 hover:text-purple-700"
+                    >
+                      {toggle ? (
+                        <PiEyeSlashThin size={20} />
+                      ) : (
+                        <PiEyeLight size={20} />
+                      )}
+                    </span>
+                  </div>
+                  {errors.password && touched.password && (
+                    <span className="text-red-600 text-sm">
+                      {errors.password}
+                    </span>
+                  )}
+                </div>
 
-                {toggle ? (
-                  <PiEyeLight onClick={() => setToggle((prev) => !prev)} />
-                ) : (
-                  <PiEyeSlashThin onClick={() => setToggle((prev) => !prev)} />
-                )}
-              </div>
-            </fieldset>
-            {errors.password && touched.password ? (
-              <div className="text-red-600 text-[12px]">{errors.password}</div>
-            ) : null}
-            <fieldset className="flex flex-col items-start justify-start gap-2">
-              <label htmlFor="email">Email</label>
-              <Field
-                className="border-2 rounded py-2 px-4"
-                id="email"
-                name="email"
-                type="email"
-                placeholder="atodo@gmail.com"
-              />
-            </fieldset>
-            {errors.email && touched.email ? (
-              <div className="text-red-600 text-[12px]">{errors.email}</div>
-            ) : null}
-            <button
-              className="border-2 py-2 px-4 rounded hover:text-white hover:bg-green-600"
-              type="submit"
-            >
-              Submit
-            </button>
-          </Form>
-        )}
-      </Formik>
-      <p>
-        Don't have an Account?{" "}
-        <button onClick={() => redir("/signup")} className="font-semibold mt-3">
-          Signup
-        </button>
-      </p>
-      {/* Toast step 2*/}
-      <ToastContainer />
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className={`${
+                    loading
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-green-600 hover:bg-green-700"
+                  } text-white rounded py-2 transition`}
+                >
+                  {loading ? "Logging in..." : "Login"}
+                </button>
+
+                <p className="text-center mt-2">
+                  Don't have an account?{" "}
+                  <button
+                    onClick={() => navigate("/signup")}
+                    className="text-purple-600 font-semibold"
+                  >
+                    Sign up
+                  </button>
+                </p>
+              </Form>
+            )}
+          </Formik>
+          <ToastContainer />
+        </div>
+      </main>
     </div>
   );
 };
+
 export default Login;

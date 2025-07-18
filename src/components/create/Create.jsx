@@ -1,127 +1,144 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
-//toast step 1
 import { Bounce, ToastContainer, toast } from "react-toastify";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useRecoilValue } from "recoil";
+import { userAtom } from "../atoms/user";
 
 const SignupSchema = Yup.object().shape({
-  title: Yup.string().min(5, "Too Short!").max(50, "Too Long!"),
-  body: Yup.string(),
-  author: Yup.string(),
+  title: Yup.string().min(5, "Too Short!").max(50, "Too Long!").required("Title is required"),
+  body: Yup.string().required("Body is required"),
+  author: Yup.string().required("Author is required"),
+  image: Yup.string().url("Must be a valid URL").nullable(),
 });
 
 const Create = () => {
-  let [toggle, setToggle] = useState(false);
-  let redir = useNavigate();
-  
-  // toast step 3
+  const user = useRecoilValue(userAtom);
+  const redir = useNavigate();
+
+  useEffect(() => {
+    if (!user.isLoggedIn || user.data.role !== "admin") {
+      redir("/login");
+    }
+  }, [user, redir]);
+
   const notify = () =>
     toast.success("Blog Created Successfully!", {
       position: "top-center",
       autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
       theme: "dark",
       transition: Bounce,
     });
 
-  
-
   return (
-    <div className="items-center mx-auto rounded p-3 mt-4 mb-4 flex flex-col justify-center w-[50%] shadow-lg">
-      <h1 className="font-bold text-purple-700 text-3xl">Create</h1>
-      {
-      true && (
-        <Formik
-          initialValues={{
-            title: "",
-            body: "",
-            author: "",
-          }}
-          validationSchema={SignupSchema}
-          onSubmit={(values) => {
-            // same shape as initial values
-            //console.log(values);
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 py-10 px-4">
+      <div className="bg-white shadow-lg rounded-xl w-full max-w-2xl p-8">
+        <h1 className="text-3xl font-bold text-purple-700 text-center mb-6">Create Blog</h1>
 
+        <Formik
+          initialValues={{ title: "", body: "", author: "", image: "" }}
+          validationSchema={SignupSchema}
+          onSubmit={(values, { resetForm, setSubmitting }) => {
             axios
               .post("http://localhost:8000/Blogs/", values)
-              .then((reps) => {
-                redir("/blogs");
-
-                //console.log(reps.data);
-
+              .then(() => {
                 notify();
+                resetForm();
+                setSubmitting(false);
                 setTimeout(() => {
                   redir("/blogs");
                 }, 3000);
               })
               .catch((err) => {
-                console.log(err);
+                console.error(err);
+                setSubmitting(false);
               });
           }}
         >
-          {({ errors, touched, values }) => (
-            <Form className="flex items-center justify-center flex-col gap-2">
-              <fieldset className="flex flex-col items-start justify-start gap-2">
-                <label htmlFor="title">Title</label>
+          {({ errors, touched, isSubmitting }) => (
+            <Form className="space-y-5">
+              {/* Title */}
+              <div>
+                <label htmlFor="title" className="block text-gray-700 font-medium mb-1">
+                  Title
+                </label>
                 <Field
-                  values={values.title}
-                  className="border-2 rounded py-2 px-4"
-                  id="title"
                   name="title"
+                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400"
                 />
-              </fieldset>
+                {errors.title && touched.title && (
+                  <div className="text-red-600 text-sm mt-1">{errors.title}</div>
+                )}
+              </div>
 
-              {errors.title && touched.title ? (
-                <div className="text-red-600 text-[12px]">{errors.title}</div>
-              ) : null}
-              <fieldset className="flex flex-col items-start justify-start gap-2">
-                <label htmlFor="author">Author</label>
+              {/* Author */}
+              <div>
+                <label htmlFor="author" className="block text-gray-700 font-medium mb-1">
+                  Author
+                </label>
                 <Field
-                  values={values.author}
-                  className="border-2 rounded py-2 px-4"
-                  id="author"
-                  type="text"
                   name="author"
+                  type="text"
+                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400"
                 />
-              </fieldset>
-              {errors.author && touched.author ? (
-                <div className="text-red-600 text-[12px]">{errors.author}</div>
-              ) : null}
-              <fieldset className="flex flex-col items-start justify-start gap-2">
-                <label htmlFor="body">Body</label>
+                {errors.author && touched.author && (
+                  <div className="text-red-600 text-sm mt-1">{errors.author}</div>
+                )}
+              </div>
+
+              {/* Image */}
+              <div>
+                <label htmlFor="image" className="block text-gray-700 font-medium mb-1">
+                  Image URL (optional)
+                </label>
+                <Field
+                  name="image"
+                  type="text"
+                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400"
+                />
+                {errors.image && touched.image && (
+                  <div className="text-red-600 text-sm mt-1">{errors.image}</div>
+                )}
+              </div>
+
+              {/* Body */}
+              <div>
+                <label htmlFor="body" className="block text-gray-700 font-medium mb-1">
+                  Body
+                </label>
                 <Field
                   as="textarea"
-                  values={values.body}
-                  className="border-2 rounded py-2 px-4 min-h-[20vh] text-wrap"
-                  id="body"
                   name="body"
-                  type="text"
+                  rows="6"
+                  className="w-full px-4 py-2 border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-purple-400"
                 />
-              </fieldset>
-              {errors.body && touched.body ? (
-                <div className="text-red-600 text-[12px]">{errors.body}</div>
-              ) : null}
+                {errors.body && touched.body && (
+                  <div className="text-red-600 text-sm mt-1">{errors.body}</div>
+                )}
+              </div>
 
+              {/* Submit Button */}
               <button
-                className="border-2 py-2 px-4 rounded hover:text-white hover:bg-green-600"
                 type="submit"
+                disabled={isSubmitting}
+                className={`w-full text-white font-semibold py-2 px-4 rounded-md transition-all ${
+                  isSubmitting
+                    ? "bg-green-300 cursor-not-allowed"
+                    : "bg-green-500 hover:bg-green-600"
+                }`}
               >
-                Submit
+                {isSubmitting ? "Submitting..." : "Submit"}
               </button>
             </Form>
           )}
         </Formik>
-      )}
 
-      {/* Toast step 2*/}
-      <ToastContainer />
+        <ToastContainer />
+      </div>
     </div>
   );
 };
+
 export default Create;
