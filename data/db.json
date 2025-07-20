@@ -80,6 +80,13 @@
       "email": "solomonpius550@gmail.com",
       "password": "Dd@12345",
       "role": "user"
+    },
+    {
+      "id": "6dad",
+      "fullname": "Saha Adebayo",
+      "email": "olaumar@gmail.com",
+      "password": "Aa@12345",
+      "role": "user"
     }
   ]
 }

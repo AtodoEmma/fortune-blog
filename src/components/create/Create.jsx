@@ -42,7 +42,10 @@ const Create = () => {
           validationSchema={SignupSchema}
           onSubmit={(values, { resetForm, setSubmitting }) => {
             axios
-              .post("http://localhost:8000/Blogs/", values)
+              .post(
+                "https://687c050bb4bc7cfbda87fb75.mockapi.io/Blogs/",
+                values
+              )
               .then(() => {
                 notify();
                 resetForm();

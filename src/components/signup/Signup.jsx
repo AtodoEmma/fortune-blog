@@ -22,7 +22,7 @@ const Signup = () => {
     try {
       // Check if email already exists
       const res = await axios.get(
-        `http://localhost:8000/users?email=${values.email}`
+        `https://687c050bb4bc7cfbda87fb75.mockapi.io/users?email=${values.email}`
       );
 
       if (res.data.length > 0) {
@@ -31,7 +31,7 @@ const Signup = () => {
       }
 
       // Send POST request to register new user
-      await axios.post("http://localhost:8000/users", {
+      await axios.post("https://687c050bb4bc7cfbda87fb75.mockapi.io/users", {
         fullname: values.fullname,
         email: values.email,
         password: values.password,

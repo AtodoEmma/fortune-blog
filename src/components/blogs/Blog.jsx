@@ -51,7 +51,7 @@ const Blog = () => {
       redir("/login");
     }
     axios
-      .get("http://localhost:8000/Blogs")
+      .get("https://687c050bb4bc7cfbda87fb75.mockapi.io/Blogs")
       .then((resp) => setBlogs(resp.data))
       .catch((err) => console.log(err));
   }, []);

@@ -39,7 +39,7 @@ const Details = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/Blogs/" + id)
+      .get("https://687c050bb4bc7cfbda87fb75.mockapi.io/Blogs/" + id)
       .then((res) => {
         setBlog(res.data);
       })

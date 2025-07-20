@@ -54,7 +54,10 @@ const Update = () => {
           validationSchema={UpdateSchema}
           onSubmit={(values, { setSubmitting }) => {
             axios
-              .patch(`http://localhost:8000/Blogs/${slug}`, values)
+              .patch(
+                `https://687c050bb4bc7cfbda87fb75.mockapi.io/Blogs/${slug}`,
+                values
+              )
               .then(() => {
                 handleSuccess();
                 setSubmitting(false);
