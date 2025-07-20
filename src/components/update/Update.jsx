@@ -59,7 +59,7 @@ const Update = () => {
           validationSchema={UpdateSchema}
           onSubmit={(values, { setSubmitting }) => {
             axios
-              .patch(
+              .put(
                 `https://687c050bb4bc7cfbda87fb75.mockapi.io/Blogs/${slug}`,
                 values
               )
