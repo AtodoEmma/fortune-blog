@@ -20,17 +20,19 @@ const Signup = () => {
 
   const handleSignup = async (values, actions) => {
     try {
-      // Check if email already exists
+      // 1. Get all existing users from your MockAPI
       const res = await axios.get(
-        `https://687c050bb4bc7cfbda87fb75.mockapi.io/users?email=${values.email}`
+        "https://687c050bb4bc7cfbda87fb75.mockapi.io/users"
       );
 
-      if (res.data.length > 0) {
+      // 2. Check if the email already exists
+      const emailExists = res.data.some((user) => user.email === values.email);
+      if (emailExists) {
         toast.error("Email already exists");
         return;
       }
 
-      // Send POST request to register new user
+      // 3. Create new user
       await axios.post("https://687c050bb4bc7cfbda87fb75.mockapi.io/users", {
         fullname: values.fullname,
         email: values.email,
@@ -42,11 +44,12 @@ const Signup = () => {
       navigate("/login");
     } catch (error) {
       toast.error("Signup failed");
-      console.error(error);
+      console.error("Signup error:", error);
     } finally {
-      actions.setSubmitting(false); // enable button again if needed
+      actions.setSubmitting(false); // Re-enable the submit button
     }
   };
+
 
   return (
     <div className="max-w-md mx-auto mt-10 p-6 shadow border rounded">
