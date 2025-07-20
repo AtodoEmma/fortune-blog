@@ -19,7 +19,7 @@ const Update = () => {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8000/Blogs/${slug}`)
+      .get(`https://687c050bb4bc7cfbda87fb75.mockapi.io/Blogs/${slug}`)
       .then((res) => setPost(res.data))
       .catch((err) => console.error("Error loading blog:", err));
   }, [slug]);

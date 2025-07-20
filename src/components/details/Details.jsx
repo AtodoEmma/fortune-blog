@@ -79,7 +79,7 @@ const Details = () => {
 
   const handleDelete = (id) => {
     axios
-      .delete("http://localhost:8000/Blogs/" + id)
+      .delete("https://687c050bb4bc7cfbda87fb75.mockapi.io/" + id)
       .then(() => {
         notify();
         setTimeout(() => {
