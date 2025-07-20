@@ -7,7 +7,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 
 const UpdateSchema = Yup.object().shape({
-  title: Yup.string().min(5, "Too Short!").max(50, "Too Long!").required("Title is required"),
+  title: Yup.string()
+    .min(5, "Too Short!")
+    .max(50, "Too Long!")
+    .required("Title is required"),
   body: Yup.string().required("Body is required"),
   author: Yup.string().required("Author is required"),
 });
@@ -32,7 +35,6 @@ const Update = () => {
       transition: Bounce,
     });
 
-    // Redirect after 3 seconds (same as toast duration)
     setTimeout(() => {
       redir("/blogs");
     }, 3000);
@@ -43,13 +45,16 @@ const Update = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-10">
       <div className="bg-white shadow-lg rounded-xl w-full max-w-2xl p-8">
-        <h1 className="text-3xl font-bold text-purple-700 text-center mb-6">Update Blog</h1>
+        <h1 className="text-3xl font-bold text-purple-700 text-center mb-6">
+          Update Blog
+        </h1>
 
         <Formik
+          enableReinitialize
           initialValues={{
-            title: post.title || "",
-            body: post.body || "",
-            author: post.author || "",
+            title: post.title,
+            body: post.body,
+            author: post.author,
           }}
           validationSchema={UpdateSchema}
           onSubmit={(values, { setSubmitting }) => {
@@ -71,31 +76,50 @@ const Update = () => {
           {({ errors, touched, isSubmitting }) => (
             <Form className="space-y-5">
               <div>
-                <label htmlFor="title" className="block text-gray-700 font-medium mb-1">Title</label>
+                <label
+                  htmlFor="title"
+                  className="block text-gray-700 font-medium mb-1"
+                >
+                  Title
+                </label>
                 <Field
                   name="title"
                   placeholder="Enter blog title"
                   className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400"
                 />
                 {errors.title && touched.title && (
-                  <div className="text-red-600 text-sm mt-1">{errors.title}</div>
+                  <div className="text-red-600 text-sm mt-1">
+                    {errors.title}
+                  </div>
                 )}
               </div>
 
               <div>
-                <label htmlFor="author" className="block text-gray-700 font-medium mb-1">Author</label>
+                <label
+                  htmlFor="author"
+                  className="block text-gray-700 font-medium mb-1"
+                >
+                  Author
+                </label>
                 <Field
                   name="author"
                   placeholder="Author name"
                   className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400"
                 />
                 {errors.author && touched.author && (
-                  <div className="text-red-600 text-sm mt-1">{errors.author}</div>
+                  <div className="text-red-600 text-sm mt-1">
+                    {errors.author}
+                  </div>
                 )}
               </div>
 
               <div>
-                <label htmlFor="body" className="block text-gray-700 font-medium mb-1">Body</label>
+                <label
+                  htmlFor="body"
+                  className="block text-gray-700 font-medium mb-1"
+                >
+                  Body
+                </label>
                 <Field
                   as="textarea"
                   name="body"
@@ -112,7 +136,9 @@ const Update = () => {
                 type="submit"
                 disabled={isSubmitting}
                 className={`w-full text-white font-semibold py-2 px-4 rounded-md transition-all ${
-                  isSubmitting ? "bg-green-300 cursor-not-allowed" : "bg-green-500 hover:bg-green-600"
+                  isSubmitting
+                    ? "bg-green-300 cursor-not-allowed"
+                    : "bg-green-500 hover:bg-green-600"
                 }`}
               >
                 {isSubmitting ? "Updating..." : "Update"}
